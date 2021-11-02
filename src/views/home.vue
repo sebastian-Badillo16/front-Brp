@@ -26,6 +26,6 @@ export default {
 
     #imagen_fondo{
         max-width: 100%;
-        height: auto;
+        height: 10%;
     }
 </style>

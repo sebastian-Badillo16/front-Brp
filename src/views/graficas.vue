@@ -23,21 +23,23 @@ export default {
 
     let me = this;
       let visitas = [];
-      let header = { headers: { "x-token": this.$store.state.token } };
+      let header = { headers: { "token": this.$store.state.token } };
        await axios
-        .get("articulo", header)
+        .get("visitas", header)
         .then(function (response) {
-          visitas = response.data.articulo;
+          visitas = response.data.visitas;
           visitas.map(function (x) {
             me.visitas.push(x.nombre);
+            me.visitas.push(x.cedula);
+            // me.visitas.push(x.nombre);
             // me.stock.push(x.stock) 
           
           });       
         })
         let datosY = me.datos
-        let datosX = me.stock
+        // let datosX = me.stock
         console.log(datosY);
-        console.log(datosX);
+        // console.log(datosX);
       /* eslint-disable no-unused-vars */
       var ctx = document.getElementById("myChart");
       Highcharts.chart("container", {
@@ -45,10 +47,10 @@ export default {
           type: "pie",
         },
         title: {
-          text: "Articulos",
+          text: "visitas",
         },
         xAxis: {
-          categories:datosY
+          visita:datosY
           }
         ,
         yAxis: {
@@ -57,7 +59,7 @@ export default {
           },
         },
         series: [{
-            data:datosX
+            // data:datosX
         }]
       });
     },

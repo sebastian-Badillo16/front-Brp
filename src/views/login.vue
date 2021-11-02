@@ -1,76 +1,32 @@
-
-<template >
-<!-- <img id="sangil" src="../assets/sangil.jpg"> -->
-<div >
-
- <div class="container" >
-
-  
-  <v-form
-    ref="form"
-    v-model="valid"
-    lazy-validation
-  >
-
-    <v-text-field
-      v-model="Email"
-      :rules="EmailRules"
-      label="E-mail"
-      required
-    ></v-text-field>
-
-    <v-text-field
-      v-model="Password"
-      :counter="10"
-      :rules="PasswordRules"
-      label="Password"
-      required
-    ></v-text-field>
-
-    <!-- <v-select
-      v-model="select"
-      :items="items"
-      :rules="[v => !!v || 'Item is required']"
-      label="Item"
-      required
-    ></v-select> -->
-
-    <v-checkbox
-      v-model="checkbox"
-      :rules="[v => !!v || 'You must agree to continue!']"
-      label="Terminos & Condiciones?"
-      required
-    ></v-checkbox>
-
-    <v-btn
-    v-on:click="login()"
-      :disabled="!valid"
-      color="success"
-      class="mr-4"
-      @click="validate"
-    >
-      Entrar
-    </v-btn>
-
-    <v-btn
-      color="error"
-      class="mr-4"
-      @click="reset"
-    >
-     Limpiar
-    </v-btn>
-
-    <!-- <v-btn
-      color="warning"
-      @click="resetValidation"
-    >
-      Reset Validation
-    </v-btn> -->
-  </v-form>
+<template>
+<div class="container_login">
+  <div class="login">
+    <div class="login_up">
+      <h1><strong>Login</strong></h1>
+    </div>
+    <div class="login_center">
+      <div class="row-12">
+        <img src="../assets/user.png">
+        <!--Estado input-->
+        <input id="input_invalido" v-if="valid == false" type="email" v-model="Email">
+        <input id="input_valido" v-else-if="valid == true" type="email" v-model="Email">
+      </div>
+      <label> Insertar correo</label>
+      <div class="row-12">
+        <img src="../assets/cadado.png">
+        <!--Estado input-->
+        <input id="input_invalido" v-if="valid == false" type="password" v-model="Password" >
+        <input id="input_valido" v-else-if="valid == true" type="password" v-model="Password" >
+      </div>
+      <label>Insertar clave</label>
+    </div>
+    <!-- Validacion con botones -->
+    <div class="login_buttom">
+      <input id="buttom_red" v-if="Password.length == 0 || Email.length == 0" type="button" v-on:click="log()" value="Enviar">
+      <input id="buttom_green" v-else type="button" v-on:click="login()"  value="Enviar">
+    </div>  
   </div>
-  <!-- </div> -->
 </div>
-
 </template>
 
 <script>
@@ -80,31 +36,27 @@ import Swal from 'sweetalert2'
     
     data: () => ({
       valid: true,
-     Password: '',
-      PasswordRules: [
-        v => !!v || 'Password  es requirido',
-        v => (v && v.length <= 8) || 'Minimo 8 Caracteres ',
-      ],
+      Password: '',
       Email: '',
-      EmailRules: [
-        v => !!v || 'E-mail es Requerido',
-        v => /.+@.+\..+/.test(v) || 'E-mail debe ser válido',
-      ],
-      
-      checkbox: false,
     }),
 
 
 methods: {
-      validate () {
-        this.$refs.form.validate()
-      },
-      reset () {
-        this.$refs.form.reset()
-      },
-    //   resetValidation () {
-    //     this.$refs.form.resetValidation()
-    //   },
+  //Esta funcion muestra en pantalla que necesita agregar caracteres
+  //al formulario del login 
+  log(){
+      Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Correo o contraseña estan vacios',
+    })
+  },
+
+  //Al haber error en el ingreso, los input se podran rojos por unos segundos
+  loginInvalido(){
+    this.valid = false
+  },
+
 login() {
             axios.post("usuario/login", {Email:this.Email, Password:this.Password})
             .then(response => { 
@@ -112,6 +64,8 @@ login() {
             this.$store.dispatch("setToken", response.data.token);
             this.$store.dispatch('setRol', response.data.usuario.Rol);
             this.$store.dispatch('setNombre', response.data.usuario.Nombre);
+            // this.$store.dispatch('setId', response.data.usuario._id);
+
 
             console.log('Probando token', this.$store.state.token);
             // console.log('Probando nombre', this.$store.state.Nombre);
@@ -119,6 +73,9 @@ login() {
 
             this.$router.push("/home");
             console.log(response);
+
+            //Local
+            this.valid = true
 
             Swal.fire({
               position: 'center',
@@ -136,104 +93,166 @@ login() {
               title: 'Oops...',
               text: 'Hubo un error con el correo o contraseña ',
             })
+
+            this.loginInvalido()
            
       })
     },
-    errores() {
-    
-    Swal.fire({
-      icon: 'question',
-      text: 'Correo o contraseña no tiene caracteres',
-    })    
-
-    }
   }
-
-
-
-
-
 };
 
 </script>
-
-
 <style scoped>
-
 *{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.container{
-    width: 500px;
-    margin-top: 200px;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 10px;
-    background-image: linear-gradient(-225deg, #c0b6f8 50%, #8783b1 50%);
- 
+.container_login{
+  /*ocupacion de pantalla*/
+  width: 100hv;
+  margin-top: 10%;
 }
 
+.login{
+  /*Establecer limites de ancho*/
+  max-width: 600px;
+  min-width: 300px;
 
-.cuerpo{
-    border-top: 60px;
-    border-bottom: 60px
+  /*Centrar el login*/
+  margin: auto;
+  /*Centrar elementos internos*/
+  align-items: center;
+  /*medida del login*/
+  width: 50%;
+  /*Fondo*/
+    background:
+    linear-gradient(
+    rgba(35,43,85,0.75),
+    rgba(35,43,85,0.95));
 
+  /*Sombras*/
+  box-shadow: 5px 2.5px 2.5px rgba(63, 63, 63, 0.445);
 }
 
-#correo{
-    background:#ffffff;
-    border: rgba(255, 255, 255, 0) 1px solid;
-    border-bottom: #ccc 6px solid;
-    padding: 8px;
-    width:210px;
-    color:#ff0f0f;
-    margin-top:10px;
-    font-size:1em;
-    border-radius:4px;
+.login div{
+  padding-top: 10%;
 }
 
-#clave{
-    background:#ffffff;
-    border: rgba(255, 255, 255, 0) 3px solid;
-    border-bottom: #ccc 2px solid;
-    padding: 10px;
-    width:210px;
-    color:#5d5d5d;
-    margin-top:10px;
-    font-size:1em;
-    border-radius:5px;
+.login_up{
+  color: white;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
-#boton {
-    margin-left:0px;
-    margin-top: 20px;
-    width: 50%;
-    top: 100%;
-    border-radius: 25px;
-    padding-top:5px;
-    padding-bottom:5px;
-    background:#2ecc71;
-    color:white;
-    border-radius:4px;
-    border-style: none;
+.login_center{
+  /*Hacer que cada elemente este dabajo del otro*/
+  display: flex;
+  flex-direction: column;
+  /*Centrar elementos internos*/
+  align-items: center;
 }
 
-#botonRed {
-    margin-left:0px;
-    margin-top: 10px;
-    width: 50%;
-    top: 100%;
-    border-radius: 25px;
-    padding-top:10px;
-    padding-bottom:5px;
-    background:#ac0707;
-    color:white;
-    border-radius:4px;
-    border-style: none;
+.login_center img{
+  /*Medida de las imagenes*/
+  width: 8.5%;
+  padding: 0.8%;
 }
 
+#input_valido{
+  /*Medidas de los input*/
+  width: 70%;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 1%;
+  border-radius: 5px;
+  color: azure;
+
+  /*Sombras*/
+  box-shadow: 5px 2.5px 2.5px rgba(63, 63, 63, 0.445);
+}
+
+#input_invalido{
+  /*Medidas de los input*/
+  width: 70%;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 1%;
+  border-radius: 5px;
+  border: 5px block red;
+  color: rgb(199, 46, 25);
+
+  /*Sombras*/
+  box-shadow: 5px 2.5px 2.5px rgba(63, 63, 63, 0.445);
+}
+
+.login_center label{
+  color: azure;
+  padding-bottom: 20px;
+}
+
+/*Boton valido*/
+#buttom_green{
+  background-color: green;
+  padding: 1%;
+  color: white;
+  border-radius: 15px; 
+  margin-bottom: 5px;
+  width: 20%;
+  min-width: 100px;
+  font-size: 20px;
+
+  /*Sombras*/
+  box-shadow: 5px 2.5px 2.5px rgba(63, 63, 63, 0.445);
+}
+
+#buttom_green:hover{
+  background-color: rgb(93, 209, 27);
+  padding: 1%;
+  color: white;
+  border-radius: 15px; 
+  margin-bottom: 5px;
+  width: 20%;
+  min-width: 100px;
+  font-size: 20px;
+
+  /*Sombras*/
+  box-shadow: 5px 2.5px 2.5px rgba(63, 63, 63, 0.445);
+}
+
+/*Boton no valido*/
+#buttom_red{
+  background-color: red;
+  padding: 1%;
+  color: white;
+  border-radius: 15px; 
+  margin-bottom: 5px;
+  width: 20%;
+  min-width: 100px;
+  font-size: 20px;
+
+  /*Sombras*/
+  box-shadow: 5px 2.5px 2.5px rgba(63, 63, 63, 0.445);
+}
+
+#buttom_red:hover{
+  background-color: rgb(158, 16, 16);
+  padding: 1%;
+  color: white;
+  border-radius: 15px; 
+  margin-bottom: 5px;
+  width: 20%;
+  min-width: 100px;
+  font-size: 20px;
+
+  /*Sombras*/
+  box-shadow: 5px 2.5px 2.5px rgba(63, 63, 63, 0.445);
+}
+
+#papelera{
+  width: 5%;
+  min-width: 25px;
+  border-radius: 50px;
+  height: auto;
+  background-color: white;
+}
 
 </style> 

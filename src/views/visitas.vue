@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div class="container"  id="cabezera_background">
+    <div id="espacio">
     <form>
       <!-- <cabezera /> -->
       <div id="espacio">
@@ -7,7 +8,7 @@
           v-model="Nombre"
           :error-messages="nameErrors"
           :counter="20"
-          label="Nombre"
+          label="Nombre & apellidos"
           required
           @input="$v.Nombre.$touch()"
           @blur="$v.Nombre.$touch()"
@@ -41,43 +42,37 @@
           @input="$v.Asunto.$touch()"
           @blur="$v.Asunto.$touch()"
         ></v-text-field>
-        <!-- <v-select
-        v-model="this.Codigo"
-        :items="items"
+
+
+         <v-select
+         :items="dependencias"
+        v-model="CodigoD"
         :error-messages="selectErrors"
-        label="Codigo dependencia"
+        label="CodigoD"
         :menu-props="{ top: true, offsetY: true }"
         v-if="bd == 0"
         required
-        @change="$v.select"
-        @blur="$v.select.$touch()"
-      ></v-select> -->
-
-        <!-- <v-file-input v-model="ruta"
-    accept="image/*"
-    label="File input"
-    ></v-file-input>
-    <button @click="cargar()" >guardar F</button> -->
+        
+      ></v-select> 
 
         <v-btn class="mr-4" color="success darken-1" @click="submit">
-          Guardar
+          Guardar Datos
         </v-btn>
-        <v-btn color="danger darken-1" @click="clear"> Borrar</v-btn>
+        <v-btn color="danger darken-1" @click="clear">Nueva visita</v-btn>
       </div>
-      <a href="home">
-        <v-btn class="ma-2" color="blue darken-1" dark>
+    
+
+      
+    </form>
+
+      <a link="home">
+        <v-btn class="ma-6 container" color="blue darken-1" dark>
           <v-icon dark left> mdi-arrow-left </v-icon>Back
         </v-btn>
       </a>
-
-      <v-file-input
-        v-model="ruta"
-        accept="image/*"
-        label="File input"
-      ></v-file-input>
-      <button @click="cargar()">guardar F</button>
-    </form>
   </div>
+  </div>  
+
 </template>
 
 <script>
@@ -97,9 +92,9 @@ import axios from 'axios'
       Nombre: { required, maxLength: maxLength(20) },
       Cedula: { required, maxLength: maxLength(10) },
       Asunto: { required, maxLength: maxLength(40) },
-      Codigo: { required, maxLength: maxLength(15) },
+      // CodigoD: { required, maxLength: maxLength(15) },
       Ciudad: { required, maxLength: maxLength(10) },
-      // select: { required },
+      select: { required },
       
     
     },
@@ -110,14 +105,14 @@ import axios from 'axios'
       Asunto:'',
       Cedula:'',
       Ciudad:'',
-      Codigo:'',
+      CodigoD:'',
       ruta:'',
-      // Select: null,
+      Select: null,
       // items: [
-      //   {Codigo:'01',Nombre:'secretaria general'},
-      //   {Codigo:'02',Nombre:'secretaria de gobierno'},
-      //   {Codigo:'02',Nombre:'secretariade aseo'},
       //   ],
+      editedItem: {
+        dependencias:''
+      },
       
        bd: 0,
       visitas: [], 
@@ -125,12 +120,12 @@ import axios from 'axios'
     }),
     
     computed: {
-      // selectErrors () {
-      //   const errors = []
-      //   if (!this.$v.select) return errors
-      //   !this.$v.select.required && errors.push('Ciudad es requerido')
-      //   return errors
-      // },
+      selectErrors () {
+        const errors = []
+        if (!this.$v.CodigoD) return errors
+        !this.$v.CodigoD.required && errors.push('codigo es requerido')
+        return errors
+      },
       nameErrors () {
         const errors = []
         if (!this.$v.Nombre) return errors
@@ -143,6 +138,13 @@ import axios from 'axios'
         if (!this.$v.Cedula) return errors
         !this.$v.Cedula.maxLength && errors.push('Cedula no puede tener mas de 10 caracteres')
         !this.$v.Cedula.required && errors.push('Cedula es requerido.')
+        return errors
+      },
+      foto1Errors () {
+        const errors = []
+        if (!this.$v.Cedula) return errors
+        !this.$v.Cedula.maxLength && errors.push('foto no puede pesar mas de 4mb')
+        !this.$v.Cedula.required && errors.push('foto  es requerida.')
         return errors
       },
       item2Errors () {
@@ -162,24 +164,15 @@ import axios from 'axios'
     },
 
     created() {
-      // this.selectDependencia();
+      this.selectDependencia();
       
     },
 
     methods: {
-
-      // cargar(){
-      //  if (this.bd == 0){
-      //     console.log('Guardando', this.bd);
-      //     let header = { headers: {'token': this.$store.state.token}}
-      //   //   const me = this;
-      //     axios
-      //     .post()
-
-      // console.log(this.ruta);
-      
-      // },
-
+      ejecuta(){
+        window.location.href = '/'
+        console.log(this.ejecuta)
+     },
       submit () {
       if (this.bd == 0){
           console.log('Guardando', this.bd);
@@ -193,50 +186,47 @@ import axios from 'axios'
               Asunto: this.Asunto,
               Cedula: this.Cedula,
               Ciudad:this.Ciudad,
-              CodigoDependencia:this.Codigo,
-              // Select: this.items.Select,
+              CodigoD:this.CodigoD ,
+              select: this.CodigoD,
             },
             header
-          )
+            
+          ) 
+          .then ((response) => {
+            console.log(response);
+            console.log("bien ")
+
+
+          })
+          .catch((error) => {
+            console.log (error.response);
+           alert('alert no seccion', this.ejecuta())
+          });
+          this.clear()
+
         
       } 
     },
-      cargar () {
-       if (this.bd == 0){
-          console.log('Guardando', this.bd);
-          let header = { headers: {'token': this.$store.state.token}}
-        //   const me = this;
+      
+
+      selectDependencia(){
+          let me = this;
+          let DependenciaArray = [];
+          let header = { headers: { "token": this.$store.state.token } };
           axios
-          .post(`foto `,{
-
+            .get(`dependencias`, header)
+            .then(function (response) {
+              DependenciaArray = response.data.dependencias;
+              DependenciaArray.map(function (x) {
+              me.dependencias.push({ text:x.Nombre, value: x._id });
+              console.log(x._id)
+              });
+            })
+            .catch(function (error) {
+              console.log(error);             
+             alert('alert no seccion', this.ejecuta())
+            });
           },
-          header
-          )
-
-        console.log(this.ruta);
-       }
-      },
-
-
-
-
-
-        // selectDependencia(){
-        //   let me = this;
-        //   let DependenciasArray = [];
-        //   let header = { headers: { "token": this.$store.state.token } };
-        //   axios
-        //     .get("dependencias", header)
-        //     .then(function (response) {
-        //       DependenciasArray = response.data.dependencias;
-        //       DependenciasArray.map(function (x) {
-        //         me.dependencias.push({ text: x.Codigo, value: x._id });
-        //       });
-        //     })
-        //     .catch(function (error) {
-        //       console.log(error);
-        //     });
-        //   },
 
       clear () {
         this.$v.$reset()
@@ -244,11 +234,27 @@ import axios from 'axios'
         this.Asunto = ''
         this.Cedula=''
         this.Ciudad=''
-        this.Codigo=''
-        // this.select = null
+        this.CodigoD=''
+        this.select = null
    
       }
     },
   }
   
 </script>
+
+<style scoped>
+
+#espacio{
+  padding: 50px;
+  width: -60px;
+
+}
+
+#cabezera_background{
+  background:
+  linear-gradient(
+  rgba(143, 153, 201, 0.75),
+  rgba(153, 163, 211, 0.95));
+}
+</style>

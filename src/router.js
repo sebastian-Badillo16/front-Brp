@@ -53,7 +53,7 @@ export const routes = [
     },
     {
       path: '/graficos',
-      name: 'grficas',
+      name: 'graficas',
       component: graficas
     }
 ]
